@@ -1,0 +1,40 @@
+name: CI/CD
+
+on: 
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.15.0'
+      - run: go version
+      - run: make test
+
+  release:
+    needs: test
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    name: Release a new version
+    env:
+      CLI_DIST_BRANCH: ${GITHUB_REF#refs/heads/}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.15.0'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15'
+      - run: npm install
+      - run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
