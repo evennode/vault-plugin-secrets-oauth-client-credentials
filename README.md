@@ -8,7 +8,16 @@ Client credentials grant is used by clients to obtain an access token outside of
 
 ## Usage
 
-Download plugin's binary and [register the plugin with Vault](https://www.vaultproject.io/docs/internals/plugins.html#plugin-registration). We will assume it is registered under the name
+Download plugin's binary and [register the plugin with Vault](https://www.vaultproject.io/docs/internals/plugins.html#plugin-registration). 
+Usually you register the plugin with the following commands.
+
+```console
+$ vault write sys/plugins/catalog/secret/oauthapp \
+    sha256=<calculated_sha256_hash> \
+    command=vault-plugin-secrets-oauth-client-credentials
+```
+
+We will assume it is registered under the name
 `oauthapp`.
 
 Mount the plugin at the path of your choosing:
